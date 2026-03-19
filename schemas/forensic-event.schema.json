@@ -1,0 +1,343 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FA Local Forensic Event",
+  "description": "Minimal, bounded, auditable forensic event contract for FA Local execution-control truth.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "forensic_event_id",
+    "correlation_id",
+    "request_id",
+    "event_type",
+    "route_decision_id",
+    "execution_plan_id",
+    "stable_plan_hash",
+    "review_package_id",
+    "timestamp_utc",
+    "current_posture",
+    "execution_state",
+    "degraded_subtype",
+    "summary",
+    "redaction_level",
+    "payload_minimized"
+  ],
+  "properties": {
+    "forensic_event_id": {
+      "$ref": "#/$defs/uuid"
+    },
+    "correlation_id": {
+      "$ref": "#/$defs/uuid"
+    },
+    "request_id": {
+      "$ref": "#/$defs/uuid"
+    },
+    "event_type": {
+      "$ref": "#/$defs/event_type"
+    },
+    "route_decision_id": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/uuid"
+        }
+      ]
+    },
+    "execution_plan_id": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/uuid"
+        }
+      ]
+    },
+    "stable_plan_hash": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/hash"
+        }
+      ]
+    },
+    "review_package_id": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/uuid"
+        }
+      ]
+    },
+    "timestamp_utc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "current_posture": {
+      "$ref": "#/$defs/approval_posture"
+    },
+    "execution_state": {
+      "$ref": "#/$defs/execution_state"
+    },
+    "degraded_subtype": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/degraded_subtype"
+        }
+      ]
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "redaction_level": {
+      "$ref": "#/$defs/redaction_level"
+    },
+    "payload_minimized": {
+      "const": true
+    }
+  },
+  "$defs": {
+    "uuid": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "denial_issued",
+        "route_decision_resolved",
+        "review_package_prepared",
+        "execution_status_observed"
+      ]
+    },
+    "approval_posture": {
+      "type": "string",
+      "enum": [
+        "denied",
+        "review_required",
+        "explicit_operator_approval",
+        "policy_preapproved",
+        "execute_allowed"
+      ]
+    },
+    "execution_state": {
+      "type": "string",
+      "enum": [
+        "denied",
+        "review_required",
+        "waiting_explicit_approval",
+        "admitted_not_started",
+        "in_progress",
+        "degraded",
+        "partial_success",
+        "completed_with_constraints",
+        "completed",
+        "failed",
+        "canceled"
+      ]
+    },
+    "degraded_subtype": {
+      "type": "string",
+      "enum": [
+        "degraded_pre_start",
+        "degraded_in_flight",
+        "degraded_fallback_equivalent",
+        "degraded_fallback_limited",
+        "degraded_partial",
+        "unavailable_dependency_block"
+      ]
+    },
+    "redaction_level": {
+      "type": "string",
+      "enum": [
+        "none",
+        "sensitive_fields_redacted",
+        "linkage_only"
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "execution_plan_id": {
+            "type": "string"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "stable_plan_hash": {
+            "$ref": "#/$defs/hash"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "stable_plan_hash": {
+            "type": "string"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "execution_plan_id": {
+            "$ref": "#/$defs/uuid"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "denial_issued"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "route_decision_id": {
+            "const": null
+          },
+          "execution_plan_id": {
+            "const": null
+          },
+          "stable_plan_hash": {
+            "const": null
+          },
+          "review_package_id": {
+            "const": null
+          },
+          "current_posture": {
+            "const": "denied"
+          },
+          "execution_state": {
+            "const": "denied"
+          },
+          "degraded_subtype": {
+            "const": null
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "route_decision_resolved"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "route_decision_id": {
+            "$ref": "#/$defs/uuid"
+          },
+          "execution_plan_id": {
+            "const": null
+          },
+          "stable_plan_hash": {
+            "const": null
+          },
+          "review_package_id": {
+            "const": null
+          },
+          "execution_state": {
+            "enum": [
+              "denied",
+              "review_required",
+              "waiting_explicit_approval",
+              "admitted_not_started"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "review_package_prepared"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "route_decision_id": {
+            "$ref": "#/$defs/uuid"
+          },
+          "execution_plan_id": {
+            "$ref": "#/$defs/uuid"
+          },
+          "stable_plan_hash": {
+            "$ref": "#/$defs/hash"
+          },
+          "review_package_id": {
+            "$ref": "#/$defs/uuid"
+          },
+          "current_posture": {
+            "const": "explicit_operator_approval"
+          },
+          "execution_state": {
+            "const": "waiting_explicit_approval"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "execution_status_observed"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "execution_plan_id": {
+            "$ref": "#/$defs/uuid"
+          },
+          "stable_plan_hash": {
+            "$ref": "#/$defs/hash"
+          },
+          "current_posture": {
+            "enum": [
+              "policy_preapproved",
+              "execute_allowed"
+            ]
+          },
+          "execution_state": {
+            "enum": [
+              "admitted_not_started",
+              "in_progress",
+              "degraded",
+              "partial_success",
+              "completed_with_constraints",
+              "completed",
+              "failed",
+              "canceled"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

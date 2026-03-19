@@ -24,10 +24,13 @@ The currently implemented schema-backed subset is:
 - execution request
 - execution plan
 - execution status
+- review package
+- forensic event
+- friction payload
 - route decision
 - denial guard
 
-The remaining contract surfaces are still deferred.
+All planned baseline contract surfaces now exist in schema-backed form.
 
 ## Current typed surface
 
@@ -46,11 +49,17 @@ The current machine-checked typed surface includes:
 - pure execution-plan validator and validated-plan wrapper
 - execution-status and validated-execution-status types
 - pure execution-status invariant validation helpers
+- review-package, review-execution-status-context, and approval-option types
+- pure review-package invariant validation helpers
+- forensic-event, forensic-event-type, and redaction-level types
+- pure forensic-event invariant validation helpers
+- friction-payload, friction-kind, and operator-action types
+- pure friction-payload invariant validation helpers
 - route-decision, policy-reference, and capability-decision-summary types
 - pure approval-posture resolver inputs and context
 - schema-name dispatch plus contract load/deserialize helpers
 
-This gives FA Local a stable baseline for deny-by-default behavior with the first contract layer, the first machine-checked decision layer, the first bounded plan-validation layer, and the first truthful status layer already in place.
+This gives FA Local a stable baseline for deny-by-default behavior with the first contract layer, the first machine-checked decision layer, the first bounded plan-validation layer, the first truthful status layer, the first structured review-handoff layer, the first minimal forensic-truth layer, and the first bounded operator-friction layer already in place.
 
 ## Approval and execution posture
 
@@ -96,15 +105,26 @@ The current pure logic layer can already:
 - compute stable execution-plan hashes from canonical plan content
 - validate truthful execution-status payloads without collapsing posture into state
 - require explicit degraded subtype handling for degraded and constrained status outputs
+- validate bounded review-package payloads for explicit operator approval only
+- preserve distinction between approval posture and execution state inside review handoff artifacts
+- reject fabricated execution success in review-package status context
+- require explicit degraded or fallback posture when review-package narration mentions those conditions
+- validate minimal forensic-event payloads and record/export them through a bounded workflow without introducing persistence
+- preserve distinction between approval posture and execution state inside forensic records
+- reject planner, workflow, or semantic narration in forensic-event summaries
+- require explicit degraded or fallback subtype handling when forensic-event summaries mention fallback
+- validate bounded friction-payload artifacts without collapsing denial, review, approval, and status concerns
+- preserve explicit operator-action semantics without inventing workflow authorship
+- require explicit linkage or omission rules for review-package, plan-hash, and denial surfaces inside friction payloads
 
-These checks remain bounded to validation, deny-path admission, pure decision output, bounded plan fingerprinting, and truthful status shaping.
-They do not coordinate execution.
+These checks remain bounded to validation, deny-path admission, pure decision output, bounded plan fingerprinting, truthful status shaping, deterministic internal routing, bounded internal coordination, explicit adapter-backed delivery over already selected admitted routes, one concrete capability-scoped local-file-write adapter, one bounded review-package emitter workflow for contract-compatible review-required and explicit-approval paths, and one bounded forensic recorder/export workflow over already-known execution truth.
+They still do not perform semantic interpretation, planner behavior, or unbounded external invocation.
 
 ## Current implementation boundary
 
-Schema-backed review-package, forensic-event, and friction-payload contracts do not exist yet.
+All currently planned baseline contracts now exist in schema-backed form.
 
-There is also no CLI, daemon, API surface, adapter implementation, execution routing, or runtime coordinator in the current baseline.
+There is also no CLI, daemon, or API surface, no persistence layer, no concrete forensic export sink, and no second adapter or multi-adapter runtime surface in the current baseline. The review-package emitter remains intentionally bounded to the two current review postures only and does not introduce generic workflow behavior beyond `review_required` and `explicit_operator_approval`.
 
 ## Supporting references
 
@@ -118,6 +138,15 @@ This section is grounded in:
 - `src/domain/policy/mod.rs`
 - `src/domain/capabilities/mod.rs`
 - `src/domain/execution/mod.rs`
+- `src/domain/forensics/mod.rs`
+- `src/domain/friction/mod.rs`
 - `src/domain/posture/mod.rs`
 - `src/domain/routing/mod.rs`
+- `src/adapters/exports/mod.rs`
+- `src/adapters/execution_delivery/mod.rs`
+- `src/adapters/execution_delivery/local_file_write.rs`
+- `src/app/execution_service.rs`
+- `src/app/forensic_service.rs`
+- `src/app/review_service.rs`
+- `src/app/routing_service.rs`
 - `docs/fa_local_codex_build_plan_v_1.md`

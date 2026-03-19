@@ -1,0 +1,19 @@
+{
+  "friction_payload_id": "c4c4c4c4-c4c4-4cc4-8cc4-c4c4c4c4c4c4",
+  "correlation_id": "66666666-6666-4666-8666-666666666666",
+  "request_id": "55555555-5555-4555-8555-555555555555",
+  "friction_kind": "execution_constraint",
+  "operator_action": "acknowledge",
+  "route_decision_id": "77777777-7777-4777-8777-777777777773",
+  "execution_plan_id": "99999999-9999-4999-8999-999999999999",
+  "stable_plan_hash": "a8f7e75a4a4ea309803cf16fec43a4adb788ddcaa5589d91a9c00a41a8f56df7",
+  "review_package_id": null,
+  "forensic_event_id": "f2f2f2f2-f2f2-4ff2-8ff2-f2f2f2f2f2f2",
+  "current_posture": "policy_preapproved",
+  "execution_state": "completed_with_constraints",
+  "degraded_subtype": "degraded_fallback_limited",
+  "denial_guards": [],
+  "operator_visible_summary": "execution completed with declared local export constraints",
+  "payload_minimized": true,
+  "created_at_utc": "2030-01-01T00:10:31Z"
+}

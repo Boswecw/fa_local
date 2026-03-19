@@ -1,0 +1,19 @@
+{
+  "friction_payload_id": "c2c2c2c2-c2c2-4cc2-8cc2-c2c2c2c2c2c2",
+  "correlation_id": "66666666-6666-4666-8666-666666666666",
+  "request_id": "55555555-5555-4555-8555-555555555555",
+  "friction_kind": "review_required",
+  "operator_action": "review",
+  "route_decision_id": "78787878-7878-4787-8787-787878787878",
+  "execution_plan_id": null,
+  "stable_plan_hash": null,
+  "review_package_id": null,
+  "forensic_event_id": null,
+  "current_posture": "review_required",
+  "execution_state": "review_required",
+  "degraded_subtype": null,
+  "denial_guards": [],
+  "operator_visible_summary": "request requires review before any execution path may be admitted",
+  "payload_minimized": true,
+  "created_at_utc": "2030-01-01T00:04:45Z"
+}

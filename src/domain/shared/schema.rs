@@ -14,18 +14,24 @@ pub enum SchemaName {
     ExecutionRequest,
     ExecutionPlan,
     ExecutionStatus,
+    ReviewPackage,
+    ForensicEvent,
+    FrictionPayload,
     RouteDecision,
     DenialGuard,
 }
 
 impl SchemaName {
-    pub const ALL: [SchemaName; 8] = [
+    pub const ALL: [SchemaName; 11] = [
         SchemaName::RequesterTrust,
         SchemaName::PolicyArtifact,
         SchemaName::CapabilityRegistry,
         SchemaName::ExecutionRequest,
         SchemaName::ExecutionPlan,
         SchemaName::ExecutionStatus,
+        SchemaName::ReviewPackage,
+        SchemaName::ForensicEvent,
+        SchemaName::FrictionPayload,
         SchemaName::RouteDecision,
         SchemaName::DenialGuard,
     ];
@@ -42,6 +48,9 @@ impl SchemaName {
             SchemaName::ExecutionRequest => "execution-request",
             SchemaName::ExecutionPlan => "execution-plan",
             SchemaName::ExecutionStatus => "execution-status",
+            SchemaName::ReviewPackage => "review-package",
+            SchemaName::ForensicEvent => "forensic-event",
+            SchemaName::FrictionPayload => "friction-payload",
             SchemaName::RouteDecision => "route-decision",
             SchemaName::DenialGuard => "denial-guard",
         }
@@ -55,6 +64,9 @@ impl SchemaName {
             SchemaName::ExecutionRequest => "execution-request.schema.json",
             SchemaName::ExecutionPlan => "execution-plan.schema.json",
             SchemaName::ExecutionStatus => "execution-status.schema.json",
+            SchemaName::ReviewPackage => "review-package.schema.json",
+            SchemaName::ForensicEvent => "forensic-event.schema.json",
+            SchemaName::FrictionPayload => "friction-payload.schema.json",
             SchemaName::RouteDecision => "route-decision.schema.json",
             SchemaName::DenialGuard => "denial-guard.schema.json",
         }

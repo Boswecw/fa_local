@@ -1,6 +1,6 @@
 # FA Local - System Documentation
 
-**Document version:** 0.5 (2026-03-19) - Contract, posture, plan, and execution-status slice aligned to current repo state
+**Document version:** 0.15 (2026-03-19) - Contract, posture, plan, execution-status, review-package, forensic-event, friction-payload, internal coordinator, internal routing, bounded adapter-delivery, first concrete adapter, review-emitter, and forensic recorder/export slices aligned to current repo state
 **Protocol:** Forge Documentation Protocol v1
 
 | Key | Value |
@@ -10,7 +10,7 @@
 | **Output** | `doc/faSYSTEM.md` |
 
 This `doc/system/` tree is the assembled system reference for FA Local as a bounded local execution-control service.
-It reflects the current repository state after the standalone crate scaffold, the schema-backed Phase 0.5 contract slice, the opening of Phase 1 requester/policy/capability deny logic, the pure route-decision and approval-posture slice, the bounded execution-plan and stable-hash slice, the truthful execution-status contract slice, and the current fail-closed test coverage.
+It reflects the current repository state after the standalone crate scaffold, the schema-backed Phase 0.5 contract slice, the opening of Phase 1 requester/policy/capability deny logic, the pure route-decision and approval-posture slice, the bounded execution-plan and stable-hash slice, the truthful execution-status contract slice, the bounded review-package contract slice, the full bounded review-package emitter workflow slice for both review postures, the minimal forensic-event contract slice, the bounded forensic recorder/export workflow slice, the bounded friction-payload contract slice, the internal bounded execution-coordinator slice, the internal deterministic execution-routing slice, the explicit adapter-backed delivery boundary, the first concrete local-file-write adapter slice, and the current fail-closed test coverage.
 
 Assembly contract:
 
@@ -47,7 +47,7 @@ Its current MVP purpose is narrow:
 - admit execution only through registered capabilities
 - require bounded execution plans for multi-step work
 - preserve truthful denial, degraded, partial, and completion state
-- hand back to human review when direct execution is not admissible
+- hand back to human review through a structured bounded review package when direct execution is not admissible
 - keep local forensics minimal and auditable
 
 ## Constitutional role
@@ -87,22 +87,35 @@ It currently includes:
 - typed UUID-backed identity primitives
 - fail-closed denial guards and helpers
 - schema-backed contracts for requester trust, policy artifact, capability registry, execution request, execution plan, execution status, route decision, and denial guard
+- schema-backed contract for review package
+- schema-backed contract for forensic event
+- schema-backed contract for friction payload
 - valid and invalid fixtures for those contract surfaces
 - pure schema loading and validation helpers
 - pure requester-trust evaluation and capability-admission deny logic
 - pure approval-posture resolution and typed route-decision output
 - pure bounded execution-plan validation and stable plan hashing
+- internal deterministic execution routing from validated route and plan artifacts
+- internal bounded execution coordination from validated route and plan artifacts
+- explicit adapter boundary for already routed admitted work
+- bounded adapter-backed external route delivery mapped back into truthful execution-status surfaces
+- one concrete capability-scoped local-file-write adapter implementation
+- bounded review-package emission workflow for coherent review-required and explicit-approval paths
+- bounded forensic recorder/export workflow over already-known execution truth
 - pure execution-status validation and construction helpers
+- pure review-package validation and construction helpers
+- pure forensic-event validation and construction helpers
+- pure friction-payload validation and construction helpers
 - deny smoke tests for the current fail-closed baseline rules
 
 What is still intentionally not delivered:
 
-- runtime coordination
-- runtime execution-plan coordination
-- adapters or cross-service invocation
+- any second adapter or multi-adapter runtime surface
+- broad cross-service adapter integrations
+- external adapter-backed execution coordination beyond the current bounded delivery seam
 - CLI, daemon, or API surfaces
-- review package emission
-- forensic persistence or export
+- forensic persistence layer or concrete export sink
+- persistence layer
 
 This is the current bounded baseline, not a claim that later execution-facing phases are already delivered.
 
@@ -209,10 +222,13 @@ The currently implemented schema-backed subset is:
 - execution request
 - execution plan
 - execution status
+- review package
+- forensic event
+- friction payload
 - route decision
 - denial guard
 
-The remaining contract surfaces are still deferred.
+All planned baseline contract surfaces now exist in schema-backed form.
 
 ## Current typed surface
 
@@ -231,11 +247,17 @@ The current machine-checked typed surface includes:
 - pure execution-plan validator and validated-plan wrapper
 - execution-status and validated-execution-status types
 - pure execution-status invariant validation helpers
+- review-package, review-execution-status-context, and approval-option types
+- pure review-package invariant validation helpers
+- forensic-event, forensic-event-type, and redaction-level types
+- pure forensic-event invariant validation helpers
+- friction-payload, friction-kind, and operator-action types
+- pure friction-payload invariant validation helpers
 - route-decision, policy-reference, and capability-decision-summary types
 - pure approval-posture resolver inputs and context
 - schema-name dispatch plus contract load/deserialize helpers
 
-This gives FA Local a stable baseline for deny-by-default behavior with the first contract layer, the first machine-checked decision layer, the first bounded plan-validation layer, and the first truthful status layer already in place.
+This gives FA Local a stable baseline for deny-by-default behavior with the first contract layer, the first machine-checked decision layer, the first bounded plan-validation layer, the first truthful status layer, the first structured review-handoff layer, the first minimal forensic-truth layer, and the first bounded operator-friction layer already in place.
 
 ## Approval and execution posture
 
@@ -281,15 +303,26 @@ The current pure logic layer can already:
 - compute stable execution-plan hashes from canonical plan content
 - validate truthful execution-status payloads without collapsing posture into state
 - require explicit degraded subtype handling for degraded and constrained status outputs
+- validate bounded review-package payloads for explicit operator approval only
+- preserve distinction between approval posture and execution state inside review handoff artifacts
+- reject fabricated execution success in review-package status context
+- require explicit degraded or fallback posture when review-package narration mentions those conditions
+- validate minimal forensic-event payloads and record/export them through a bounded workflow without introducing persistence
+- preserve distinction between approval posture and execution state inside forensic records
+- reject planner, workflow, or semantic narration in forensic-event summaries
+- require explicit degraded or fallback subtype handling when forensic-event summaries mention fallback
+- validate bounded friction-payload artifacts without collapsing denial, review, approval, and status concerns
+- preserve explicit operator-action semantics without inventing workflow authorship
+- require explicit linkage or omission rules for review-package, plan-hash, and denial surfaces inside friction payloads
 
-These checks remain bounded to validation, deny-path admission, pure decision output, bounded plan fingerprinting, and truthful status shaping.
-They do not coordinate execution.
+These checks remain bounded to validation, deny-path admission, pure decision output, bounded plan fingerprinting, truthful status shaping, deterministic internal routing, bounded internal coordination, explicit adapter-backed delivery over already selected admitted routes, one concrete capability-scoped local-file-write adapter, one bounded review-package emitter workflow for contract-compatible review-required and explicit-approval paths, and one bounded forensic recorder/export workflow over already-known execution truth.
+They still do not perform semantic interpretation, planner behavior, or unbounded external invocation.
 
 ## Current implementation boundary
 
-Schema-backed review-package, forensic-event, and friction-payload contracts do not exist yet.
+All currently planned baseline contracts now exist in schema-backed form.
 
-There is also no CLI, daemon, API surface, adapter implementation, execution routing, or runtime coordinator in the current baseline.
+There is also no CLI, daemon, or API surface, no persistence layer, no concrete forensic export sink, and no second adapter or multi-adapter runtime surface in the current baseline. The review-package emitter remains intentionally bounded to the two current review postures only and does not introduce generic workflow behavior beyond `review_required` and `explicit_operator_approval`.
 
 ## Supporting references
 
@@ -303,8 +336,17 @@ This section is grounded in:
 - `src/domain/policy/mod.rs`
 - `src/domain/capabilities/mod.rs`
 - `src/domain/execution/mod.rs`
+- `src/domain/forensics/mod.rs`
+- `src/domain/friction/mod.rs`
 - `src/domain/posture/mod.rs`
 - `src/domain/routing/mod.rs`
+- `src/adapters/exports/mod.rs`
+- `src/adapters/execution_delivery/mod.rs`
+- `src/adapters/execution_delivery/local_file_write.rs`
+- `src/app/execution_service.rs`
+- `src/app/forensic_service.rs`
+- `src/app/review_service.rs`
+- `src/app/routing_service.rs`
 - `docs/fa_local_codex_build_plan_v_1.md`
 
 ---
@@ -328,7 +370,7 @@ FA Local currently includes:
 
 The current machine-checked layer covers:
 
-- schema validation for the eight implemented contract surfaces
+- schema validation for the eleven implemented contract surfaces
 - valid and invalid fixture coverage for each implemented schema
 - typed contract deserialization after schema validation
 - requester-trust fail-closed rules
@@ -345,6 +387,19 @@ The current machine-checked layer covers:
 - typed execution-status invariant validation and construction helpers
 - execution-status tests proving posture remains distinct from state
 - explicit degraded subtype enforcement for degraded and constrained status outputs
+- review-package schema invariants for bounded structured review handoff
+- typed review-package invariant validation and construction helpers
+- review-package tests proving posture remains distinct from execution state
+- review-package tests rejecting fabricated execution-success context
+- forensic-event schema invariants for minimal bounded forensic truth
+- typed forensic-event invariant validation and construction helpers
+- forensic-event tests proving posture remains distinct from execution state
+- forensic-event tests rejecting planner or workflow narration
+- forensic recorder/export workflow tests for truthful linkage and fail-closed emission/export behavior
+- friction-payload schema invariants for bounded operator-visible friction truth
+- typed friction-payload invariant validation and construction helpers
+- friction-payload tests proving denial, review, approval, and constrained status remain distinct
+- friction-payload tests rejecting planner or workflow narration
 - stable snake-case serialization for baseline enums
 - unknown-enum rejection behavior
 - typed guard creation
@@ -372,6 +427,16 @@ It adds:
 - pure execution-plan validation with declared fallback checks
 - stable execution-plan hash generation from canonical plan content
 - pure execution-status validation with truthful-state invariants
+- schema-backed review-package contract and pure validation helpers
+- schema-backed forensic-event contract and pure validation helpers
+- bounded forensic recorder/export workflow over already-known route, review, and execution truth
+- schema-backed friction-payload contract and pure validation helpers
+- internal deterministic routing service over validated route and plan inputs
+- internal bounded execution coordinator over validated route and plan inputs
+- bounded review-package emitter workflow over coherent review-required and explicit-approval inputs
+- explicit adapter boundary for external route delivery from already selected admitted routes
+- bounded adapter-result mapping back into existing execution-status truth surfaces
+- one concrete capability-scoped local-file-write adapter behind the delivery boundary
 - deterministic contract fixtures and deny smoke coverage
 - latest `jsonschema` validator release aligned in the crate dependency set
 
@@ -379,12 +444,12 @@ It adds:
 
 The following planned surfaces are explicitly not delivered yet:
 
-- execution coordinator
-- execution routing
+- any second adapter or multi-adapter runtime surface
+- broad cross-service adapter integrations
 - CLI, daemon, or API surface
-- adapters and cross-service invocation
-- review package emitter
-- forensic recorder and export
+- forensic persistence layer
+- concrete forensic export sink
+- persistence layer
 
 ## Current delivery posture
 
@@ -403,6 +468,15 @@ The current delivered state should be described as:
 - first machine-checked route-decision layer present
 - first bounded execution-plan layer present
 - first truthful execution-status layer present
-- no executable FA Local runtime slice admitted yet
+- first structured review-package handoff layer present
+- first minimal forensic-event truth layer present
+- first bounded forensic recorder/export workflow present
+- first bounded friction-payload layer present
+- first deterministic internal execution-routing layer present
+- first internal bounded execution-coordinator layer present
+- first bounded review-package emitter workflow present
+- first bounded adapter-backed external route-delivery layer present
+- first concrete capability-scoped adapter present
+- no full external FA Local runtime surface admitted yet
 
-That wording matters because the crate now has meaningful contract, deny-path, posture-resolution, bounded plan-validation, and truthful status behavior, but the execution-control service itself is still not implemented beyond bounded validation and decision output.
+That wording matters because the crate now has meaningful contract, deny-path, posture-resolution, bounded plan-validation, truthful status, bounded review-handoff behavior, a bounded review-package emitter workflow for both current review postures, minimal forensic-event truth behavior, a bounded forensic recorder/export workflow, bounded operator-friction behavior, deterministic internal routing behavior, bounded internal coordination behavior, a narrow adapter-backed delivery seam, and one concrete capability-scoped adapter, but it still does not ship persistence, a concrete forensic export sink, a second adapter, generic workflow orchestration, or a CLI/API/daemon runtime surface.

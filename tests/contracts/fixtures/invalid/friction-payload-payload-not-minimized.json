@@ -1,0 +1,29 @@
+{
+  "friction_payload_id": "c1c1c1c1-c1c1-4cc1-8cc1-c1c1c1c1c1c1",
+  "correlation_id": "66666666-6666-4666-8666-666666666666",
+  "request_id": "55555555-5555-4555-8555-555555555555",
+  "friction_kind": "denial",
+  "operator_action": "stop",
+  "route_decision_id": null,
+  "execution_plan_id": null,
+  "stable_plan_hash": null,
+  "review_package_id": null,
+  "forensic_event_id": "f0f0f0f0-f0f0-4ff0-8ff0-f0f0f0f0f0f0",
+  "current_posture": "denied",
+  "execution_state": "denied",
+  "degraded_subtype": null,
+  "denial_guards": [
+    {
+      "reason_class": "unknown_requester",
+      "scope": "request",
+      "basis": "runtime_safety",
+      "remediable": false,
+      "review_available": false,
+      "summary": "unknown requester denied",
+      "timestamp_utc": "2030-01-01T00:00:00Z"
+    }
+  ],
+  "operator_visible_summary": "request denied due to missing trust basis",
+  "payload_minimized": false,
+  "created_at_utc": "2030-01-01T00:08:31Z"
+}

@@ -4,8 +4,11 @@ use fa_local::DenialGuard;
 use fa_local::deserialize_contract_value;
 use fa_local::domain::capabilities::CapabilityRegistryLoader;
 use fa_local::domain::execution::{ExecutionPlan, ExecutionRequest};
+use fa_local::domain::forensics::ForensicEvent;
+use fa_local::domain::friction::FrictionPayload;
 use fa_local::domain::policy::PolicyArtifactLoader;
 use fa_local::domain::requester_trust::RequesterTrustEngine;
+use fa_local::domain::review::ReviewPackage;
 use fa_local::domain::routing::RouteDecisionLoader;
 use fa_local::domain::status::ExecutionStatus;
 use fa_local::{EnvironmentMode, RequesterClass, SchemaName};
@@ -91,4 +94,94 @@ fn valid_execution_status_fixture_loads_into_typed_model() {
         fa_local::ApprovalPosture::PolicyPreapproved
     );
     assert_eq!(status.current_step.as_deref(), Some("step_export_prepare"));
+}
+
+#[test]
+fn valid_review_package_fixture_loads_into_typed_model() {
+    let value = support::load_fixture_json("valid", "review-package-basic.json");
+    let package = ReviewPackage::load_contract_value(&value).unwrap();
+
+    assert_eq!(
+        package.current_posture,
+        fa_local::ApprovalPosture::ExplicitOperatorApproval
+    );
+    assert_eq!(
+        package
+            .execution_status_context
+            .as_ref()
+            .map(|context| context.state),
+        Some(fa_local::ExecutionState::WaitingExplicitApproval)
+    );
+    assert!(
+        package
+            .approval_options_allowed_by_policy
+            .contains(&fa_local::domain::review::ApprovalOption::ApproveExecute)
+    );
+}
+
+#[test]
+fn valid_review_required_review_package_fixture_loads_into_typed_model() {
+    let value = support::load_fixture_json("valid", "review-package-review-required-basic.json");
+    let package = ReviewPackage::load_contract_value(&value).unwrap();
+
+    assert_eq!(
+        package.current_posture,
+        fa_local::ApprovalPosture::ReviewRequired
+    );
+    assert!(package.execution_plan_id.is_none());
+    assert!(package.stable_plan_hash.is_none());
+    assert_eq!(
+        package
+            .execution_status_context
+            .as_ref()
+            .map(|context| context.state),
+        Some(fa_local::ExecutionState::ReviewRequired)
+    );
+}
+
+#[test]
+fn valid_forensic_event_fixture_loads_into_typed_model() {
+    let value = support::load_fixture_json("valid", "forensic-event-execution-status-basic.json");
+    let event = ForensicEvent::load_contract_value(&value).unwrap();
+
+    assert_eq!(
+        event.event_type,
+        fa_local::domain::forensics::ForensicEventType::ExecutionStatusObserved
+    );
+    assert_eq!(
+        event.current_posture,
+        fa_local::ApprovalPosture::PolicyPreapproved
+    );
+    assert_eq!(
+        event.execution_state,
+        fa_local::ExecutionState::CompletedWithConstraints
+    );
+    assert_eq!(
+        event.degraded_subtype,
+        Some(fa_local::DegradedSubtype::DegradedFallbackLimited)
+    );
+}
+
+#[test]
+fn valid_friction_payload_fixture_loads_into_typed_model() {
+    let value =
+        support::load_fixture_json("valid", "friction-payload-explicit-approval-basic.json");
+    let payload = FrictionPayload::load_contract_value(&value).unwrap();
+
+    assert_eq!(
+        payload.friction_kind,
+        fa_local::domain::friction::FrictionKind::ExplicitApprovalRequired
+    );
+    assert_eq!(
+        payload.operator_action,
+        fa_local::domain::friction::OperatorAction::ApproveOrDecline
+    );
+    assert_eq!(
+        payload.current_posture,
+        fa_local::ApprovalPosture::ExplicitOperatorApproval
+    );
+    assert_eq!(
+        payload.execution_state,
+        fa_local::ExecutionState::WaitingExplicitApproval
+    );
 }

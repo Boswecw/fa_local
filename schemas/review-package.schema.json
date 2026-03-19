@@ -1,0 +1,285 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FA Local Review Package",
+  "description": "Structured, bounded review handoff package for review-required and explicit operator approval cases in FA Local.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "review_package_id",
+    "originating_request_id",
+    "correlation_id",
+    "route_decision_id",
+    "execution_plan_id",
+    "stable_plan_hash",
+    "current_posture",
+    "execution_status_context",
+    "intent_basis",
+    "requester_summary",
+    "proposed_execution_summary",
+    "side_effect_assessment",
+    "degraded_or_fallback_posture",
+    "approval_options_allowed_by_policy",
+    "denial_consequences_if_declined",
+    "packaged_at_utc"
+  ],
+  "properties": {
+    "review_package_id": {
+      "$ref": "#/$defs/uuid"
+    },
+    "originating_request_id": {
+      "$ref": "#/$defs/uuid"
+    },
+    "correlation_id": {
+      "$ref": "#/$defs/uuid"
+    },
+    "route_decision_id": {
+      "$ref": "#/$defs/uuid"
+    },
+    "execution_plan_id": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/uuid"
+        }
+      ]
+    },
+    "stable_plan_hash": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      ]
+    },
+    "current_posture": {
+      "type": "string",
+      "enum": [
+        "review_required",
+        "explicit_operator_approval"
+      ]
+    },
+    "execution_status_context": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/execution_status_context"
+        }
+      ]
+    },
+    "intent_basis": {
+      "type": "string",
+      "enum": [
+        "explicit_user_action",
+        "operator_approval"
+      ]
+    },
+    "requester_summary": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "proposed_execution_summary": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "side_effect_assessment": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "degraded_or_fallback_posture": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/degraded_subtype"
+        }
+      ]
+    },
+    "approval_options_allowed_by_policy": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/approval_option"
+      }
+    },
+    "denial_consequences_if_declined": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "packaged_at_utc": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "$defs": {
+    "uuid": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+    },
+    "degraded_subtype": {
+      "type": "string",
+      "enum": [
+        "degraded_pre_start",
+        "degraded_in_flight",
+        "degraded_fallback_equivalent",
+        "degraded_fallback_limited",
+        "degraded_partial",
+        "unavailable_dependency_block"
+      ]
+    },
+    "approval_option": {
+      "type": "string",
+      "enum": [
+        "approve_execute",
+        "decline_request",
+        "defer_without_execution"
+      ]
+    },
+    "execution_status_context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "degraded_subtype",
+        "updated_at_utc",
+        "truthful_user_visible_summary"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "review_required",
+            "waiting_explicit_approval"
+          ]
+        },
+        "degraded_subtype": {
+          "const": null
+        },
+        "updated_at_utc": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "truthful_user_visible_summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "properties": {
+        "approval_options_allowed_by_policy": {
+          "contains": {
+            "const": "approve_execute"
+          }
+        }
+      }
+    },
+    {
+      "properties": {
+        "approval_options_allowed_by_policy": {
+          "contains": {
+            "const": "decline_request"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "current_posture": {
+            "const": "explicit_operator_approval"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "execution_plan_id": {
+            "$ref": "#/$defs/uuid"
+          },
+          "stable_plan_hash": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "execution_status_context": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/execution_status_context"
+                  },
+                  {
+                    "properties": {
+                      "state": {
+                        "const": "waiting_explicit_approval"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "current_posture": {
+            "const": "review_required"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "execution_plan_id": {
+            "const": null
+          },
+          "stable_plan_hash": {
+            "const": null
+          },
+          "execution_status_context": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/execution_status_context"
+                  },
+                  {
+                    "properties": {
+                      "state": {
+                        "const": "review_required"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

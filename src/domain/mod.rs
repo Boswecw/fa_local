@@ -1,6 +1,7 @@
 pub mod capabilities;
 pub mod execution;
 pub mod forensics;
+pub mod friction;
 pub mod guards;
 pub mod policy;
 pub mod posture;

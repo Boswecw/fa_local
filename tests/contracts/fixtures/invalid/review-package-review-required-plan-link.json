@@ -1,0 +1,27 @@
+{
+  "review_package_id": "efefefef-efef-4fef-8fef-efefefefefef",
+  "originating_request_id": "55555555-5555-4555-8555-555555555555",
+  "correlation_id": "66666666-6666-4666-8666-666666666666",
+  "route_decision_id": "77777777-7777-4777-8777-777777777772",
+  "execution_plan_id": "99999999-9999-4999-8999-999999999999",
+  "stable_plan_hash": "a8f7e75a4a4ea309803cf16fec43a4adb788ddcaa5589d91a9c00a41a8f56df7",
+  "current_posture": "review_required",
+  "execution_status_context": {
+    "state": "review_required",
+    "degraded_subtype": null,
+    "updated_at_utc": "2030-01-01T00:05:10Z",
+    "truthful_user_visible_summary": "request requires operator review"
+  },
+  "intent_basis": "explicit_user_action",
+  "requester_summary": "trusted app surface requested a governed export write",
+  "proposed_execution_summary": "requested local export write requires operator review before execution",
+  "side_effect_assessment": "local_file_write remains gated until operator review resolves the request",
+  "degraded_or_fallback_posture": null,
+  "approval_options_allowed_by_policy": [
+    "approve_execute",
+    "decline_request",
+    "defer_without_execution"
+  ],
+  "denial_consequences_if_declined": "request remains denied until a new governed approval path exists",
+  "packaged_at_utc": "2030-01-01T00:05:15Z"
+}

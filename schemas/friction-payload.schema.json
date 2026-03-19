@@ -1,0 +1,455 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FA Local Friction Payload",
+  "description": "Bounded operator-visible friction payload for FA Local without collapsing denial, review, approval, or execution truth into one blob.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "friction_payload_id",
+    "correlation_id",
+    "request_id",
+    "friction_kind",
+    "operator_action",
+    "route_decision_id",
+    "execution_plan_id",
+    "stable_plan_hash",
+    "review_package_id",
+    "forensic_event_id",
+    "current_posture",
+    "execution_state",
+    "degraded_subtype",
+    "denial_guards",
+    "operator_visible_summary",
+    "payload_minimized",
+    "created_at_utc"
+  ],
+  "properties": {
+    "friction_payload_id": {
+      "$ref": "#/$defs/uuid"
+    },
+    "correlation_id": {
+      "$ref": "#/$defs/uuid"
+    },
+    "request_id": {
+      "$ref": "#/$defs/uuid"
+    },
+    "friction_kind": {
+      "$ref": "#/$defs/friction_kind"
+    },
+    "operator_action": {
+      "$ref": "#/$defs/operator_action"
+    },
+    "route_decision_id": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/uuid"
+        }
+      ]
+    },
+    "execution_plan_id": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/uuid"
+        }
+      ]
+    },
+    "stable_plan_hash": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/hash"
+        }
+      ]
+    },
+    "review_package_id": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/uuid"
+        }
+      ]
+    },
+    "forensic_event_id": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/uuid"
+        }
+      ]
+    },
+    "current_posture": {
+      "$ref": "#/$defs/approval_posture"
+    },
+    "execution_state": {
+      "$ref": "#/$defs/execution_state"
+    },
+    "degraded_subtype": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/degraded_subtype"
+        }
+      ]
+    },
+    "denial_guards": {
+      "type": "array",
+      "maxItems": 5,
+      "items": {
+        "$ref": "#/$defs/denial_guard"
+      }
+    },
+    "operator_visible_summary": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "payload_minimized": {
+      "const": true
+    },
+    "created_at_utc": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "$defs": {
+    "uuid": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "friction_kind": {
+      "type": "string",
+      "enum": [
+        "denial",
+        "review_required",
+        "explicit_approval_required",
+        "execution_constraint"
+      ]
+    },
+    "operator_action": {
+      "type": "string",
+      "enum": [
+        "stop",
+        "review",
+        "approve_or_decline",
+        "acknowledge"
+      ]
+    },
+    "approval_posture": {
+      "type": "string",
+      "enum": [
+        "denied",
+        "review_required",
+        "explicit_operator_approval",
+        "policy_preapproved",
+        "execute_allowed"
+      ]
+    },
+    "execution_state": {
+      "type": "string",
+      "enum": [
+        "denied",
+        "review_required",
+        "waiting_explicit_approval",
+        "admitted_not_started",
+        "in_progress",
+        "degraded",
+        "partial_success",
+        "completed_with_constraints",
+        "completed",
+        "failed",
+        "canceled"
+      ]
+    },
+    "degraded_subtype": {
+      "type": "string",
+      "enum": [
+        "degraded_pre_start",
+        "degraded_in_flight",
+        "degraded_fallback_equivalent",
+        "degraded_fallback_limited",
+        "degraded_partial",
+        "unavailable_dependency_block"
+      ]
+    },
+    "denial_guard": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reason_class",
+        "scope",
+        "basis",
+        "remediable",
+        "review_available",
+        "summary",
+        "timestamp_utc"
+      ],
+      "properties": {
+        "reason_class": {
+          "type": "string",
+          "enum": [
+            "unknown_requester",
+            "untrusted_requester",
+            "missing_policy",
+            "policy_denied",
+            "capability_not_admitted",
+            "contract_invalid",
+            "integrity_failed",
+            "dependency_unavailable",
+            "privacy_scope_violation",
+            "review_required",
+            "unsupported_route",
+            "disabled_by_operator"
+          ]
+        },
+        "scope": {
+          "type": "string",
+          "enum": [
+            "request",
+            "capability",
+            "route",
+            "service",
+            "artifact",
+            "operation"
+          ]
+        },
+        "basis": {
+          "type": "string",
+          "enum": [
+            "contract",
+            "policy",
+            "contract_and_policy",
+            "runtime_safety"
+          ]
+        },
+        "remediable": {
+          "type": "boolean"
+        },
+        "review_available": {
+          "type": "boolean"
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "timestamp_utc": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "execution_plan_id": {
+            "type": "string"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "stable_plan_hash": {
+            "$ref": "#/$defs/hash"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "stable_plan_hash": {
+            "type": "string"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "execution_plan_id": {
+            "$ref": "#/$defs/uuid"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "friction_kind": {
+            "const": "denial"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "operator_action": {
+            "const": "stop"
+          },
+          "current_posture": {
+            "const": "denied"
+          },
+          "execution_state": {
+            "const": "denied"
+          },
+          "execution_plan_id": {
+            "const": null
+          },
+          "stable_plan_hash": {
+            "const": null
+          },
+          "review_package_id": {
+            "const": null
+          },
+          "degraded_subtype": {
+            "const": null
+          },
+          "denial_guards": {
+            "minItems": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "friction_kind": {
+            "const": "review_required"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "operator_action": {
+            "const": "review"
+          },
+          "route_decision_id": {
+            "$ref": "#/$defs/uuid"
+          },
+          "current_posture": {
+            "const": "review_required"
+          },
+          "execution_state": {
+            "const": "review_required"
+          },
+          "execution_plan_id": {
+            "const": null
+          },
+          "stable_plan_hash": {
+            "const": null
+          },
+          "review_package_id": {
+            "const": null
+          },
+          "degraded_subtype": {
+            "const": null
+          },
+          "denial_guards": {
+            "maxItems": 0
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "friction_kind": {
+            "const": "explicit_approval_required"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "operator_action": {
+            "const": "approve_or_decline"
+          },
+          "route_decision_id": {
+            "$ref": "#/$defs/uuid"
+          },
+          "execution_plan_id": {
+            "$ref": "#/$defs/uuid"
+          },
+          "stable_plan_hash": {
+            "$ref": "#/$defs/hash"
+          },
+          "review_package_id": {
+            "$ref": "#/$defs/uuid"
+          },
+          "current_posture": {
+            "const": "explicit_operator_approval"
+          },
+          "execution_state": {
+            "const": "waiting_explicit_approval"
+          },
+          "degraded_subtype": {
+            "const": null
+          },
+          "denial_guards": {
+            "maxItems": 0
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "friction_kind": {
+            "const": "execution_constraint"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "operator_action": {
+            "const": "acknowledge"
+          },
+          "execution_plan_id": {
+            "$ref": "#/$defs/uuid"
+          },
+          "stable_plan_hash": {
+            "$ref": "#/$defs/hash"
+          },
+          "review_package_id": {
+            "const": null
+          },
+          "current_posture": {
+            "enum": [
+              "policy_preapproved",
+              "execute_allowed"
+            ]
+          },
+          "execution_state": {
+            "enum": [
+              "degraded",
+              "partial_success",
+              "completed_with_constraints",
+              "failed",
+              "canceled"
+            ]
+          },
+          "denial_guards": {
+            "maxItems": 0
+          }
+        }
+      }
+    }
+  ]
+}

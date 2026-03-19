@@ -60,3 +60,4 @@ uuid_id!(RouteDecisionId);
 uuid_id!(ExecutionPlanId);
 uuid_id!(ReviewPackageId);
 uuid_id!(ForensicEventId);
+uuid_id!(FrictionPayloadId);
