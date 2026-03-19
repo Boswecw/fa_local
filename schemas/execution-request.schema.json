@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://boswelldigitalsolutions.com/schemas/fa-local/execution-request.schema.json",
+  "title": "FA Local Execution Request",
+  "description": "Bounded execution request contract for FA Local Phase 1 opening work.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "request_id",
+    "correlation_id",
+    "requester_id",
+    "environment_mode",
+    "requested_capability_id",
+    "requested_side_effect_class",
+    "intent",
+    "intent_summary",
+    "requested_at"
+  ],
+  "$defs": {
+    "uuid_string": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+    },
+    "environment_mode": {
+      "type": "string",
+      "enum": [
+        "dev",
+        "test",
+        "staging",
+        "prod",
+        "airgapped",
+        "test_harness"
+      ]
+    },
+    "side_effect_class": {
+      "type": "string",
+      "enum": [
+        "none",
+        "local_file_write",
+        "local_db_mutation",
+        "local_process_spawn",
+        "external_network_denied_by_default",
+        "other_governed"
+      ]
+    }
+  },
+  "properties": {
+    "request_id": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/uuid_string"
+        }
+      ]
+    },
+    "correlation_id": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/uuid_string"
+        }
+      ]
+    },
+    "requester_id": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/uuid_string"
+        }
+      ]
+    },
+    "environment_mode": {
+      "$ref": "#/$defs/environment_mode"
+    },
+    "requested_capability_id": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/uuid_string"
+        }
+      ]
+    },
+    "requested_side_effect_class": {
+      "$ref": "#/$defs/side_effect_class"
+    },
+    "intent": {
+      "type": "string",
+      "enum": [
+        "execute_capability"
+      ]
+    },
+    "intent_summary": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "requested_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

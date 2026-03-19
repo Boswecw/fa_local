@@ -1,0 +1,26 @@
+{
+  "registry_version": "1.0.0",
+  "capabilities": [
+    {
+      "capability_id": "44444444-4444-4444-8444-444444444444",
+      "owner_service": "fa-local",
+      "capability_type": "local_file_write",
+      "side_effect_class": "local_file_write",
+      "approval_posture": "policy_preapproved",
+      "allowed_requester_classes": [
+        "trusted_app_surface"
+      ],
+      "timeout_budget_ms": 1000,
+      "retry_budget": 0,
+      "max_duration_budget_ms": 5000,
+      "enabled_state": "enabled",
+      "review_class": "none",
+      "provenance": {
+        "source_kind": "registry_file",
+        "issued_at": "2029-12-30T00:00:00Z"
+      },
+      "revocation_state": "active",
+      "version_range": ">=1.0.0"
+    }
+  ]
+}

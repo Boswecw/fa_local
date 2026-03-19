@@ -1,0 +1,46 @@
+{
+  "policy_id": "33333333-3333-4333-8333-333333333333",
+  "policy_version": "1.0.0",
+  "scope": {
+    "service_id": "fa-local",
+    "environment_modes": [
+      "prod"
+    ]
+  },
+  "capability_rules": [
+    {
+      "capability_id": "44444444-4444-4444-8444-444444444444",
+      "allowed": true,
+      "allowed_requester_classes": [
+        "trusted_app_surface"
+      ],
+      "allowed_side_effect_classes": [
+        "local_file_write"
+      ],
+      "required_approval_posture": "policy_preapproved"
+    }
+  ],
+  "side_effect_rules": [
+    {
+      "side_effect_class": "local_file_write",
+      "allowed": true
+    }
+  ],
+  "approval_rules": [
+    {
+      "requester_class": "trusted_app_surface",
+      "max_posture": "execute_allowed"
+    }
+  ],
+  "environment_conditions": [
+    "prod"
+  ],
+  "dependency_readiness_conditions": [
+    "all_dependencies_ready"
+  ],
+  "failure_behavior": "continue",
+  "policy_provenance": {
+    "source_kind": "local_governed_file",
+    "issued_at": "2029-12-30T00:00:00Z"
+  }
+}

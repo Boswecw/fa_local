@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://boswelldigitalsolutions.com/schemas/fa-local/requester-trust.schema.json",
+  "title": "FA Local Requester Trust",
+  "description": "Strict requester trust envelope for FA Local request admission.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requester_id",
+    "requester_class",
+    "app_context",
+    "environment_mode",
+    "trust_basis",
+    "trust_basis_provenance",
+    "request_nonce_or_token",
+    "issued_at",
+    "expires_at"
+  ],
+  "$defs": {
+    "uuid_string": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+    },
+    "environment_mode": {
+      "type": "string",
+      "enum": [
+        "dev",
+        "test",
+        "staging",
+        "prod",
+        "airgapped",
+        "test_harness"
+      ]
+    },
+    "requester_class": {
+      "type": "string",
+      "enum": [
+        "trusted_app_surface",
+        "trusted_internal_service",
+        "review_surface",
+        "development_test_surface",
+        "untrusted_unknown"
+      ]
+    },
+    "trust_basis": {
+      "type": "string",
+      "enum": [
+        "signed_local_surface",
+        "internal_service_token",
+        "review_mediation",
+        "development_fixture"
+      ]
+    },
+    "trust_basis_provenance": {
+      "type": "string",
+      "enum": [
+        "signed_manifest",
+        "operator_configuration",
+        "runtime_attestation",
+        "test_fixture"
+      ]
+    },
+    "user_intent_basis": {
+      "type": "string",
+      "enum": [
+        "explicit_user_action",
+        "operator_approval"
+      ]
+    }
+  },
+  "properties": {
+    "requester_id": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/uuid_string"
+        }
+      ]
+    },
+    "requester_class": {
+      "$ref": "#/$defs/requester_class"
+    },
+    "app_context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "app_id",
+        "app_version",
+        "installation_id"
+      ],
+      "properties": {
+        "app_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9._-]{2,63}$"
+        },
+        "app_version": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,31}$"
+        },
+        "installation_id": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/uuid_string"
+            }
+          ]
+        }
+      }
+    },
+    "environment_mode": {
+      "$ref": "#/$defs/environment_mode"
+    },
+    "trust_basis": {
+      "$ref": "#/$defs/trust_basis"
+    },
+    "trust_basis_provenance": {
+      "$ref": "#/$defs/trust_basis_provenance"
+    },
+    "user_intent_basis": {
+      "$ref": "#/$defs/user_intent_basis"
+    },
+    "request_nonce_or_token": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._:-]{16,128}$"
+    },
+    "issued_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

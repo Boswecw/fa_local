@@ -1,0 +1,433 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FA Local Route Decision",
+  "description": "Machine-checked route decision and approval-posture resolution output for FA Local.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "route_decision_id",
+    "correlation_id",
+    "request_id",
+    "resolved_approval_posture",
+    "execution_allowed",
+    "denial_guards",
+    "review_required",
+    "explicit_approval_required",
+    "policy_reference",
+    "capability_decision_summary",
+    "operator_visible_summary",
+    "degraded_subtype",
+    "decided_at_utc"
+  ],
+  "properties": {
+    "route_decision_id": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+    },
+    "correlation_id": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+    },
+    "request_id": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+    },
+    "resolved_approval_posture": {
+      "type": "string",
+      "enum": [
+        "denied",
+        "review_required",
+        "explicit_operator_approval",
+        "policy_preapproved",
+        "execute_allowed"
+      ]
+    },
+    "execution_allowed": {
+      "type": "boolean"
+    },
+    "denial_guards": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 8,
+      "items": {
+        "$ref": "#/$defs/denial_guard"
+      }
+    },
+    "review_required": {
+      "type": "boolean"
+    },
+    "explicit_approval_required": {
+      "type": "boolean"
+    },
+    "policy_reference": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/policy_reference"
+        }
+      ]
+    },
+    "capability_decision_summary": {
+      "$ref": "#/$defs/capability_decision_summary"
+    },
+    "operator_visible_summary": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "degraded_subtype": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "enum": [
+            "degraded_pre_start",
+            "degraded_in_flight",
+            "degraded_fallback_equivalent",
+            "degraded_fallback_limited",
+            "degraded_partial",
+            "unavailable_dependency_block"
+          ]
+        }
+      ]
+    },
+    "decided_at_utc": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "$defs": {
+    "approval_posture": {
+      "type": "string",
+      "enum": [
+        "denied",
+        "review_required",
+        "explicit_operator_approval",
+        "policy_preapproved",
+        "execute_allowed"
+      ]
+    },
+    "side_effect_class": {
+      "type": "string",
+      "enum": [
+        "none",
+        "local_file_write",
+        "local_db_mutation",
+        "local_process_spawn",
+        "external_network_denied_by_default",
+        "other_governed"
+      ]
+    },
+    "review_class": {
+      "type": "string",
+      "enum": [
+        "none",
+        "operator"
+      ]
+    },
+    "denial_guard": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reason_class",
+        "scope",
+        "basis",
+        "remediable",
+        "review_available",
+        "summary",
+        "timestamp_utc"
+      ],
+      "properties": {
+        "reason_class": {
+          "type": "string",
+          "enum": [
+            "unknown_requester",
+            "untrusted_requester",
+            "missing_policy",
+            "policy_denied",
+            "capability_not_admitted",
+            "contract_invalid",
+            "integrity_failed",
+            "dependency_unavailable",
+            "privacy_scope_violation",
+            "review_required",
+            "unsupported_route",
+            "disabled_by_operator"
+          ]
+        },
+        "scope": {
+          "type": "string",
+          "enum": [
+            "request",
+            "capability",
+            "route",
+            "service",
+            "artifact",
+            "operation"
+          ]
+        },
+        "basis": {
+          "type": "string",
+          "enum": [
+            "contract",
+            "policy",
+            "contract_and_policy",
+            "runtime_safety"
+          ]
+        },
+        "remediable": {
+          "type": "boolean"
+        },
+        "review_available": {
+          "type": "boolean"
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "timestamp_utc": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "policy_reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policy_id",
+        "policy_version"
+      ],
+      "properties": {
+        "policy_id": {
+          "type": "string",
+          "format": "uuid",
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+        },
+        "policy_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32
+        }
+      }
+    },
+    "capability_decision_summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requested_capability_id",
+        "capability_admitted",
+        "capability_owner_service",
+        "requested_side_effect_class",
+        "capability_approval_posture",
+        "policy_required_approval_posture",
+        "requester_max_approval_posture",
+        "side_effect_minimum_approval_posture",
+        "review_class"
+      ],
+      "properties": {
+        "requested_capability_id": {
+          "type": "string",
+          "format": "uuid",
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+        },
+        "capability_admitted": {
+          "type": "boolean"
+        },
+        "capability_owner_service": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
+            }
+          ]
+        },
+        "requested_side_effect_class": {
+          "$ref": "#/$defs/side_effect_class"
+        },
+        "capability_approval_posture": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/approval_posture"
+            }
+          ]
+        },
+        "policy_required_approval_posture": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/approval_posture"
+            }
+          ]
+        },
+        "requester_max_approval_posture": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/approval_posture"
+            }
+          ]
+        },
+        "side_effect_minimum_approval_posture": {
+          "$ref": "#/$defs/approval_posture"
+        },
+        "review_class": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/review_class"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "resolved_approval_posture": {
+            "const": "denied"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "execution_allowed": {
+            "const": false
+          },
+          "review_required": {
+            "const": false
+          },
+          "explicit_approval_required": {
+            "const": false
+          },
+          "denial_guards": {
+            "minItems": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "resolved_approval_posture": {
+            "const": "review_required"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "execution_allowed": {
+            "const": false
+          },
+          "review_required": {
+            "const": true
+          },
+          "explicit_approval_required": {
+            "const": false
+          },
+          "denial_guards": {
+            "maxItems": 0
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "resolved_approval_posture": {
+            "const": "explicit_operator_approval"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "execution_allowed": {
+            "const": false
+          },
+          "review_required": {
+            "const": false
+          },
+          "explicit_approval_required": {
+            "const": true
+          },
+          "denial_guards": {
+            "maxItems": 0
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "resolved_approval_posture": {
+            "const": "policy_preapproved"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "execution_allowed": {
+            "const": true
+          },
+          "review_required": {
+            "const": false
+          },
+          "explicit_approval_required": {
+            "const": false
+          },
+          "denial_guards": {
+            "maxItems": 0
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "resolved_approval_posture": {
+            "const": "execute_allowed"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "execution_allowed": {
+            "const": true
+          },
+          "review_required": {
+            "const": false
+          },
+          "explicit_approval_required": {
+            "const": false
+          },
+          "denial_guards": {
+            "maxItems": 0
+          }
+        }
+      }
+    }
+  ]
+}

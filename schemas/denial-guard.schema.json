@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://boswelldigitalsolutions.com/schemas/fa-local/denial-guard.schema.json",
+  "title": "FA Local Denial Guard",
+  "description": "Structured deny-path payload for fail-closed FA Local decisions.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "reason_class",
+    "scope",
+    "basis",
+    "remediable",
+    "review_available",
+    "summary",
+    "timestamp_utc"
+  ],
+  "properties": {
+    "reason_class": {
+      "type": "string",
+      "enum": [
+        "unknown_requester",
+        "untrusted_requester",
+        "missing_policy",
+        "policy_denied",
+        "capability_not_admitted",
+        "contract_invalid",
+        "integrity_failed",
+        "dependency_unavailable",
+        "privacy_scope_violation",
+        "review_required",
+        "unsupported_route",
+        "disabled_by_operator"
+      ]
+    },
+    "scope": {
+      "type": "string",
+      "enum": [
+        "request",
+        "capability",
+        "route",
+        "service",
+        "artifact",
+        "operation"
+      ]
+    },
+    "basis": {
+      "type": "string",
+      "enum": [
+        "contract",
+        "policy",
+        "contract_and_policy",
+        "runtime_safety"
+      ]
+    },
+    "remediable": {
+      "type": "boolean"
+    },
+    "review_available": {
+      "type": "boolean"
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "timestamp_utc": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

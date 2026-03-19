@@ -11,6 +11,7 @@ pub use domain::shared::{
     ApprovalPosture, CapabilityId, CorrelationId, DegradedSubtype, DenialBasis, DenialReasonClass,
     DenialScope, EnvironmentMode, ExecutionPlanId, ExecutionState, ForensicEventId, PolicyId,
     RequestId, RequesterClass, RequesterId, ReviewPackageId, RevocationState, RouteDecisionId,
-    SideEffectClass, TimestampUtc, now_utc,
+    SchemaName, SideEffectClass, TimestampUtc, deserialize_contract_value, load_contract_from_path,
+    load_json_value, now_utc, validate_contract_value,
 };
 pub use errors::{FaLocalError, FaLocalResult};

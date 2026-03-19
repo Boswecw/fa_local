@@ -1,0 +1,9 @@
+{
+  "reason_class": "unknown_requester",
+  "scope": "request",
+  "basis": "runtime_safety",
+  "remediable": false,
+  "review_available": false,
+  "summary": "unknown requester denied",
+  "timestamp_utc": "2030-01-01T00:00:00Z"
+}

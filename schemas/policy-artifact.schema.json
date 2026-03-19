@@ -1,0 +1,242 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://boswelldigitalsolutions.com/schemas/fa-local/policy-artifact.schema.json",
+  "title": "FA Local Policy Artifact",
+  "description": "Governed policy artifact required before execution admission in FA Local.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "policy_id",
+    "policy_version",
+    "scope",
+    "capability_rules",
+    "side_effect_rules",
+    "approval_rules",
+    "environment_conditions",
+    "dependency_readiness_conditions",
+    "failure_behavior",
+    "policy_provenance"
+  ],
+  "$defs": {
+    "uuid_string": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+    },
+    "environment_mode": {
+      "type": "string",
+      "enum": [
+        "dev",
+        "test",
+        "staging",
+        "prod",
+        "airgapped",
+        "test_harness"
+      ]
+    },
+    "requester_class": {
+      "type": "string",
+      "enum": [
+        "trusted_app_surface",
+        "trusted_internal_service",
+        "review_surface",
+        "development_test_surface",
+        "untrusted_unknown"
+      ]
+    },
+    "approval_posture": {
+      "type": "string",
+      "enum": [
+        "denied",
+        "review_required",
+        "explicit_operator_approval",
+        "policy_preapproved",
+        "execute_allowed"
+      ]
+    },
+    "side_effect_class": {
+      "type": "string",
+      "enum": [
+        "none",
+        "local_file_write",
+        "local_db_mutation",
+        "local_process_spawn",
+        "external_network_denied_by_default",
+        "other_governed"
+      ]
+    }
+  },
+  "properties": {
+    "policy_id": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/uuid_string"
+        }
+      ]
+    },
+    "policy_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "service_id",
+        "environment_modes"
+      ],
+      "properties": {
+        "service_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]{1,63}$"
+        },
+        "environment_modes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 6,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/environment_mode"
+          }
+        }
+      }
+    },
+    "capability_rules": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 64,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "capability_id",
+          "allowed",
+          "allowed_requester_classes",
+          "allowed_side_effect_classes",
+          "required_approval_posture"
+        ],
+        "properties": {
+          "capability_id": {
+            "allOf": [
+              {
+                "$ref": "#/$defs/uuid_string"
+              }
+            ]
+          },
+          "allowed": {
+            "type": "boolean"
+          },
+          "allowed_requester_classes": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 5,
+            "uniqueItems": true,
+            "items": {
+              "$ref": "#/$defs/requester_class"
+            }
+          },
+          "allowed_side_effect_classes": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 6,
+            "uniqueItems": true,
+            "items": {
+              "$ref": "#/$defs/side_effect_class"
+            }
+          },
+          "required_approval_posture": {
+            "$ref": "#/$defs/approval_posture"
+          }
+        }
+      }
+    },
+    "side_effect_rules": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "side_effect_class",
+          "allowed"
+        ],
+        "properties": {
+          "side_effect_class": {
+            "$ref": "#/$defs/side_effect_class"
+          },
+          "allowed": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "approval_rules": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "requester_class",
+          "max_posture"
+        ],
+        "properties": {
+          "requester_class": {
+            "$ref": "#/$defs/requester_class"
+          },
+          "max_posture": {
+            "$ref": "#/$defs/approval_posture"
+          }
+        }
+      }
+    },
+    "environment_conditions": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 6,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/environment_mode"
+      }
+    },
+    "dependency_readiness_conditions": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "all_dependencies_ready"
+        ]
+      }
+    },
+    "failure_behavior": {
+      "type": "string",
+      "enum": [
+        "deny"
+      ]
+    },
+    "policy_provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_kind",
+        "issued_at"
+      ],
+      "properties": {
+        "source_kind": {
+          "type": "string",
+          "enum": [
+            "local_governed_file"
+          ]
+        },
+        "issued_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}
