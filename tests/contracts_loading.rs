@@ -3,10 +3,11 @@ mod support;
 use fa_local::DenialGuard;
 use fa_local::deserialize_contract_value;
 use fa_local::domain::capabilities::CapabilityRegistryLoader;
-use fa_local::domain::execution::ExecutionRequest;
+use fa_local::domain::execution::{ExecutionPlan, ExecutionRequest};
 use fa_local::domain::policy::PolicyArtifactLoader;
 use fa_local::domain::requester_trust::RequesterTrustEngine;
 use fa_local::domain::routing::RouteDecisionLoader;
+use fa_local::domain::status::ExecutionStatus;
 use fa_local::{EnvironmentMode, RequesterClass, SchemaName};
 
 #[test]
@@ -48,6 +49,16 @@ fn valid_execution_request_fixture_loads_into_typed_model() {
 }
 
 #[test]
+fn valid_execution_plan_fixture_loads_into_typed_model() {
+    let value = support::load_fixture_json("valid", "execution-plan-basic.json");
+    let plan = ExecutionPlan::load_contract_value(&value).unwrap();
+
+    assert_eq!(plan.steps.len(), 2);
+    assert_eq!(plan.declared_max_step_count, 4);
+    assert_eq!(plan.max_duration_budget_ms, 2000);
+}
+
+#[test]
 fn valid_denial_guard_fixture_loads_into_typed_model() {
     let value = support::load_fixture_json("valid", "denial-guard-basic.json");
     let guard: DenialGuard = deserialize_contract_value(SchemaName::DenialGuard, &value).unwrap();
@@ -67,4 +78,17 @@ fn valid_route_decision_fixture_loads_into_typed_model() {
         decision.operator_visible_summary,
         "request is policy preapproved for capability 44444444-4444-4444-8444-444444444444"
     );
+}
+
+#[test]
+fn valid_execution_status_fixture_loads_into_typed_model() {
+    let value = support::load_fixture_json("valid", "execution-status-in-progress-basic.json");
+    let status = ExecutionStatus::load_contract_value(&value).unwrap();
+
+    assert_eq!(status.state, fa_local::ExecutionState::InProgress);
+    assert_eq!(
+        status.current_posture,
+        fa_local::ApprovalPosture::PolicyPreapproved
+    );
+    assert_eq!(status.current_step.as_deref(), Some("step_export_prepare"));
 }

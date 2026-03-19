@@ -12,16 +12,20 @@ pub enum SchemaName {
     PolicyArtifact,
     CapabilityRegistry,
     ExecutionRequest,
+    ExecutionPlan,
+    ExecutionStatus,
     RouteDecision,
     DenialGuard,
 }
 
 impl SchemaName {
-    pub const ALL: [SchemaName; 6] = [
+    pub const ALL: [SchemaName; 8] = [
         SchemaName::RequesterTrust,
         SchemaName::PolicyArtifact,
         SchemaName::CapabilityRegistry,
         SchemaName::ExecutionRequest,
+        SchemaName::ExecutionPlan,
+        SchemaName::ExecutionStatus,
         SchemaName::RouteDecision,
         SchemaName::DenialGuard,
     ];
@@ -36,6 +40,8 @@ impl SchemaName {
             SchemaName::PolicyArtifact => "policy-artifact",
             SchemaName::CapabilityRegistry => "capability-registry",
             SchemaName::ExecutionRequest => "execution-request",
+            SchemaName::ExecutionPlan => "execution-plan",
+            SchemaName::ExecutionStatus => "execution-status",
             SchemaName::RouteDecision => "route-decision",
             SchemaName::DenialGuard => "denial-guard",
         }
@@ -47,6 +53,8 @@ impl SchemaName {
             SchemaName::PolicyArtifact => "policy-artifact.schema.json",
             SchemaName::CapabilityRegistry => "capability-registry.schema.json",
             SchemaName::ExecutionRequest => "execution-request.schema.json",
+            SchemaName::ExecutionPlan => "execution-plan.schema.json",
+            SchemaName::ExecutionStatus => "execution-status.schema.json",
             SchemaName::RouteDecision => "route-decision.schema.json",
             SchemaName::DenialGuard => "denial-guard.schema.json",
         }

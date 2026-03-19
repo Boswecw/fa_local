@@ -22,6 +22,8 @@ The currently implemented schema-backed subset is:
 - policy artifact
 - capability registry
 - execution request
+- execution plan
+- execution status
 - route decision
 - denial guard
 
@@ -40,11 +42,15 @@ The current machine-checked typed surface includes:
 - policy artifact and capability-rule types
 - capability registry and capability-record types
 - execution request type
+- execution-plan, execution-plan-step, and fallback-reference types
+- pure execution-plan validator and validated-plan wrapper
+- execution-status and validated-execution-status types
+- pure execution-status invariant validation helpers
 - route-decision, policy-reference, and capability-decision-summary types
 - pure approval-posture resolver inputs and context
 - schema-name dispatch plus contract load/deserialize helpers
 
-This gives FA Local a stable baseline for deny-by-default behavior with the first contract layer and the first machine-checked decision layer already in place.
+This gives FA Local a stable baseline for deny-by-default behavior with the first contract layer, the first machine-checked decision layer, the first bounded plan-validation layer, and the first truthful status layer already in place.
 
 ## Approval and execution posture
 
@@ -86,13 +92,17 @@ The current pure logic layer can already:
 - deny policy/capability mismatch
 - resolve deterministic approval posture from requester trust, policy, capability admission, review class, and side-effect posture
 - produce typed route decisions for `denied`, `review_required`, `explicit_operator_approval`, `policy_preapproved`, and `execute_allowed`
+- validate bounded execution plans against declared step counts, declared fallbacks, admitted capabilities, and timeout ceilings
+- compute stable execution-plan hashes from canonical plan content
+- validate truthful execution-status payloads without collapsing posture into state
+- require explicit degraded subtype handling for degraded and constrained status outputs
 
-These checks remain bounded to validation, deny-path admission, and pure decision output.
+These checks remain bounded to validation, deny-path admission, pure decision output, bounded plan fingerprinting, and truthful status shaping.
 They do not coordinate execution.
 
 ## Current implementation boundary
 
-Schema-backed execution-plan, execution-status, review-package, forensic-event, and friction-payload contracts do not exist yet.
+Schema-backed review-package, forensic-event, and friction-payload contracts do not exist yet.
 
 There is also no CLI, daemon, API surface, adapter implementation, execution routing, or runtime coordinator in the current baseline.
 

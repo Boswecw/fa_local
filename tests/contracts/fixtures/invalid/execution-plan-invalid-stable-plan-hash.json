@@ -1,0 +1,26 @@
+{
+  "execution_plan_id": "99999999-9999-4999-8999-999999999999",
+  "correlation_id": "66666666-6666-4666-8666-666666666666",
+  "originating_request_id": "55555555-5555-4555-8555-555555555555",
+  "steps": [
+    {
+      "step_id": "step_export_prepare",
+      "capability_id": "44444444-4444-4444-8444-444444444444",
+      "declared_side_effect_class": "local_file_write",
+      "timeout_budget_ms": 400
+    }
+  ],
+  "referenced_capabilities": [
+    "44444444-4444-4444-8444-444444444444"
+  ],
+  "declared_max_step_count": 1,
+  "declared_side_effect_classes": [
+    "local_file_write"
+  ],
+  "fallback_references": [],
+  "cancellation_policy": "cancel_remaining_steps",
+  "completion_policy": "all_steps_must_succeed",
+  "max_duration_budget_ms": 1000,
+  "stable_plan_hash": "not-a-hash",
+  "planned_at_utc": "2030-01-01T00:10:00Z"
+}

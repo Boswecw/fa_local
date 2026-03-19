@@ -50,17 +50,19 @@ It currently includes:
 - typed runtime vocabulary for environment, requester, posture, denial, and degraded state
 - typed UUID-backed identity primitives
 - fail-closed denial guards and helpers
-- schema-backed contracts for requester trust, policy artifact, capability registry, execution request, route decision, and denial guard
+- schema-backed contracts for requester trust, policy artifact, capability registry, execution request, execution plan, execution status, route decision, and denial guard
 - valid and invalid fixtures for those contract surfaces
 - pure schema loading and validation helpers
 - pure requester-trust evaluation and capability-admission deny logic
 - pure approval-posture resolution and typed route-decision output
+- pure bounded execution-plan validation and stable plan hashing
+- pure execution-status validation and construction helpers
 - deny smoke tests for the current fail-closed baseline rules
 
 What is still intentionally not delivered:
 
 - runtime coordination
-- execution-plan control
+- runtime execution-plan coordination
 - adapters or cross-service invocation
 - CLI, daemon, or API surfaces
 - review package emission

@@ -1,0 +1,671 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FA Local Execution Status",
+  "description": "Truthful execution status contract for FA Local. Approval posture remains distinct from execution state.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "request_id",
+    "correlation_id",
+    "execution_plan_id",
+    "stable_plan_hash",
+    "current_posture",
+    "state",
+    "degraded_subtype",
+    "started_at_utc",
+    "updated_at_utc",
+    "completed_at_utc",
+    "current_step",
+    "completion_summary",
+    "failure_summary",
+    "truthful_user_visible_summary"
+  ],
+  "properties": {
+    "request_id": {
+      "$ref": "#/$defs/uuid"
+    },
+    "correlation_id": {
+      "$ref": "#/$defs/uuid"
+    },
+    "execution_plan_id": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/uuid"
+        }
+      ]
+    },
+    "stable_plan_hash": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      ]
+    },
+    "current_posture": {
+      "$ref": "#/$defs/approval_posture"
+    },
+    "state": {
+      "$ref": "#/$defs/execution_state"
+    },
+    "degraded_subtype": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/degraded_subtype"
+        }
+      ]
+    },
+    "started_at_utc": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "format": "date-time"
+        }
+      ]
+    },
+    "updated_at_utc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_at_utc": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "format": "date-time"
+        }
+      ]
+    },
+    "current_step": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 48,
+          "pattern": "^[a-z0-9][a-z0-9_-]{0,47}$"
+        }
+      ]
+    },
+    "completion_summary": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        }
+      ]
+    },
+    "failure_summary": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        }
+      ]
+    },
+    "truthful_user_visible_summary": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    }
+  },
+  "$defs": {
+    "uuid": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+    },
+    "approval_posture": {
+      "type": "string",
+      "enum": [
+        "denied",
+        "review_required",
+        "explicit_operator_approval",
+        "policy_preapproved",
+        "execute_allowed"
+      ]
+    },
+    "execution_state": {
+      "type": "string",
+      "enum": [
+        "denied",
+        "review_required",
+        "waiting_explicit_approval",
+        "admitted_not_started",
+        "in_progress",
+        "degraded",
+        "partial_success",
+        "completed_with_constraints",
+        "completed",
+        "failed",
+        "canceled"
+      ]
+    },
+    "degraded_subtype": {
+      "type": "string",
+      "enum": [
+        "degraded_pre_start",
+        "degraded_in_flight",
+        "degraded_fallback_equivalent",
+        "degraded_fallback_limited",
+        "degraded_partial",
+        "unavailable_dependency_block"
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "const": "denied"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "current_posture": {
+            "const": "denied"
+          },
+          "execution_plan_id": {
+            "const": null
+          },
+          "stable_plan_hash": {
+            "const": null
+          },
+          "degraded_subtype": {
+            "const": null
+          },
+          "started_at_utc": {
+            "const": null
+          },
+          "completed_at_utc": {
+            "const": null
+          },
+          "current_step": {
+            "const": null
+          },
+          "completion_summary": {
+            "const": null
+          },
+          "failure_summary": {
+            "const": null
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "const": "review_required"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "current_posture": {
+            "const": "review_required"
+          },
+          "execution_plan_id": {
+            "const": null
+          },
+          "stable_plan_hash": {
+            "const": null
+          },
+          "degraded_subtype": {
+            "const": null
+          },
+          "started_at_utc": {
+            "const": null
+          },
+          "completed_at_utc": {
+            "const": null
+          },
+          "current_step": {
+            "const": null
+          },
+          "completion_summary": {
+            "const": null
+          },
+          "failure_summary": {
+            "const": null
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "const": "waiting_explicit_approval"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "current_posture": {
+            "const": "explicit_operator_approval"
+          },
+          "execution_plan_id": {
+            "const": null
+          },
+          "stable_plan_hash": {
+            "const": null
+          },
+          "degraded_subtype": {
+            "const": null
+          },
+          "started_at_utc": {
+            "const": null
+          },
+          "completed_at_utc": {
+            "const": null
+          },
+          "current_step": {
+            "const": null
+          },
+          "completion_summary": {
+            "const": null
+          },
+          "failure_summary": {
+            "const": null
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "const": "admitted_not_started"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "current_posture": {
+            "enum": [
+              "policy_preapproved",
+              "execute_allowed"
+            ]
+          },
+          "execution_plan_id": {
+            "$ref": "#/$defs/uuid"
+          },
+          "stable_plan_hash": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "degraded_subtype": {
+            "const": null
+          },
+          "started_at_utc": {
+            "const": null
+          },
+          "completed_at_utc": {
+            "const": null
+          },
+          "current_step": {
+            "const": null
+          },
+          "completion_summary": {
+            "const": null
+          },
+          "failure_summary": {
+            "const": null
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "const": "in_progress"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "current_posture": {
+            "enum": [
+              "policy_preapproved",
+              "execute_allowed"
+            ]
+          },
+          "execution_plan_id": {
+            "$ref": "#/$defs/uuid"
+          },
+          "stable_plan_hash": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "degraded_subtype": {
+            "const": null
+          },
+          "started_at_utc": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "completed_at_utc": {
+            "const": null
+          },
+          "current_step": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 48,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,47}$"
+          },
+          "completion_summary": {
+            "const": null
+          },
+          "failure_summary": {
+            "const": null
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "const": "degraded"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "current_posture": {
+            "enum": [
+              "policy_preapproved",
+              "execute_allowed"
+            ]
+          },
+          "execution_plan_id": {
+            "$ref": "#/$defs/uuid"
+          },
+          "stable_plan_hash": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "degraded_subtype": {
+            "$ref": "#/$defs/degraded_subtype"
+          },
+          "completed_at_utc": {
+            "const": null
+          },
+          "completion_summary": {
+            "const": null
+          },
+          "failure_summary": {
+            "const": null
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "const": "partial_success"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "current_posture": {
+            "enum": [
+              "policy_preapproved",
+              "execute_allowed"
+            ]
+          },
+          "execution_plan_id": {
+            "$ref": "#/$defs/uuid"
+          },
+          "stable_plan_hash": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "degraded_subtype": {
+            "const": "degraded_partial"
+          },
+          "started_at_utc": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "completed_at_utc": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "current_step": {
+            "const": null
+          },
+          "completion_summary": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "failure_summary": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "const": "completed_with_constraints"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "current_posture": {
+            "enum": [
+              "policy_preapproved",
+              "execute_allowed"
+            ]
+          },
+          "execution_plan_id": {
+            "$ref": "#/$defs/uuid"
+          },
+          "stable_plan_hash": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "degraded_subtype": {
+            "enum": [
+              "degraded_fallback_equivalent",
+              "degraded_fallback_limited"
+            ]
+          },
+          "started_at_utc": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "completed_at_utc": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "current_step": {
+            "const": null
+          },
+          "completion_summary": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "failure_summary": {
+            "const": null
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "const": "completed"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "current_posture": {
+            "enum": [
+              "policy_preapproved",
+              "execute_allowed"
+            ]
+          },
+          "execution_plan_id": {
+            "$ref": "#/$defs/uuid"
+          },
+          "stable_plan_hash": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "degraded_subtype": {
+            "const": null
+          },
+          "started_at_utc": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "completed_at_utc": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "current_step": {
+            "const": null
+          },
+          "completion_summary": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "failure_summary": {
+            "const": null
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "const": "failed"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "current_posture": {
+            "enum": [
+              "policy_preapproved",
+              "execute_allowed"
+            ]
+          },
+          "execution_plan_id": {
+            "$ref": "#/$defs/uuid"
+          },
+          "stable_plan_hash": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "degraded_subtype": {
+            "const": null
+          },
+          "started_at_utc": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "completed_at_utc": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "current_step": {
+            "const": null
+          },
+          "completion_summary": {
+            "const": null
+          },
+          "failure_summary": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "const": "canceled"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "current_posture": {
+            "enum": [
+              "policy_preapproved",
+              "execute_allowed"
+            ]
+          },
+          "execution_plan_id": {
+            "$ref": "#/$defs/uuid"
+          },
+          "stable_plan_hash": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "degraded_subtype": {
+            "const": null
+          },
+          "completed_at_utc": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "current_step": {
+            "const": null
+          },
+          "completion_summary": {
+            "const": null
+          },
+          "failure_summary": {
+            "const": null
+          }
+        }
+      }
+    }
+  ]
+}

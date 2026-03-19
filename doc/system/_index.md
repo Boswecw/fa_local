@@ -1,6 +1,6 @@
 # FA Local - System Documentation
 
-**Document version:** 0.3 (2026-03-19) - Contract, denial, and posture-resolution slice aligned to current repo state
+**Document version:** 0.5 (2026-03-19) - Contract, posture, plan, and execution-status slice aligned to current repo state
 **Protocol:** Forge Documentation Protocol v1
 
 | Key | Value |
@@ -10,7 +10,7 @@
 | **Output** | `doc/faSYSTEM.md` |
 
 This `doc/system/` tree is the assembled system reference for FA Local as a bounded local execution-control service.
-It reflects the current repository state after the standalone crate scaffold, the schema-backed Phase 0.5 contract slice, the opening of Phase 1 requester/policy/capability deny logic, the pure route-decision and approval-posture slice, and the current fail-closed test coverage.
+It reflects the current repository state after the standalone crate scaffold, the schema-backed Phase 0.5 contract slice, the opening of Phase 1 requester/policy/capability deny logic, the pure route-decision and approval-posture slice, the bounded execution-plan and stable-hash slice, the truthful execution-status contract slice, and the current fail-closed test coverage.
 
 Assembly contract:
 

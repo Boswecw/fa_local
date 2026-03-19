@@ -73,6 +73,14 @@ pub struct CapabilityRegistry {
     pub capabilities: Vec<CapabilityRecord>,
 }
 
+impl CapabilityRegistry {
+    pub fn capability_for(&self, capability_id: CapabilityId) -> Option<&CapabilityRecord> {
+        self.capabilities
+            .iter()
+            .find(|entry| entry.capability_id == capability_id)
+    }
+}
+
 #[derive(Debug, Default)]
 pub struct CapabilityRegistryLoader;
 
@@ -88,9 +96,7 @@ impl CapabilityRegistryLoader {
         request: &ExecutionRequest,
     ) -> Result<CapabilityRecord, DenialGuard> {
         let capability = registry
-            .capabilities
-            .iter()
-            .find(|entry| entry.capability_id == request.requested_capability_id)
+            .capability_for(request.requested_capability_id)
             .ok_or_else(|| {
                 deny(
                     DenialReasonClass::CapabilityNotAdmitted,
