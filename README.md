@@ -1,7 +1,27 @@
 # FA Local
 
-FA Local is the governed local execution boundary for Forge applications.
+FA Local is the app-support governed local execution boundary for Forge
+applications.
 
-This repository is the implementation home for the FA Local service. It is intentionally separate from `forge-local-runtime`, which remains the governance-and-contracts authority repository for the shared local runtime layer.
+It is an implementation repo for the FA Local service. Shared local-runtime
+doctrine and vocabulary remain owned by `forge-local-runtime`.
 
-Current status: Ticket 1 scaffold complete. The crate builds, exposes typed baseline vocabulary, and defaults toward fail-closed admission. Contract schemas, artifact loaders, and execution coordination are intentionally not implemented yet.
+## Status
+
+Ticket 1 scaffold is present. The Rust crate builds, exposes typed baseline
+vocabulary, and defaults toward fail-closed admission. Contract schemas,
+artifact loaders, and execution coordination are intentionally not complete.
+
+## Documentation
+
+- `docs/fa-local_architecture_spec.md`
+- `docs/fa-local_extended_roadmap.md`
+- `docs/fa_local_codex_build_plan_v_1.md`
+
+## Code Mirror
+
+`doc/system/` is the canonical code mirror. Rebuild the assembled mirror with:
+
+```bash
+bash doc/system/BUILD.sh
+```
