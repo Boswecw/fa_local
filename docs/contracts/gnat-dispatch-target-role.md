@@ -2,7 +2,7 @@
 
 ## Status
 
-Target role opened; runtime and schema not promoted.
+Runtime and schema promoted as a bounded FA Local GNAT dispatch support surface.
 
 ## Source Authority
 
@@ -18,12 +18,12 @@ Current source authority evidence:
 - `src/bin/fa_local_run.rs`
 - `ci_gate.sh`
 
-## Target Role
+## Promoted Support Role
 
-FA Local app support may receive a future GNAT dispatch promotion only as the
-bounded execution-routing side of the Cortex GNAT surface.
+FA Local app support owns the bounded execution-routing side of the Cortex GNAT
+surface.
 
-The support target role is limited to:
+The promoted support role is limited to:
 
 - validating a Cortex-originated `GnatDispatchEnvelope.v1`
 - enforcing that FA Local owns execution routing
@@ -35,27 +35,27 @@ The support target role is limited to:
 
 ## Explicit Non-Goals
 
-This target role does not authorize:
+This promotion does not authorize:
 
-- copying GNAT dispatch runtime code into support in this slice
-- copying `gnat-dispatch-envelope.schema.json` into support in this slice
 - changing execution service behavior
 - adding queue, watcher, retry, or scheduler ownership
 - letting Cortex own integrated execution routing
 - storing durable GNAT records in FA Local
 - emitting semantic labels or candidate meaning
 
+## Promoted Files
+
+This slice promotes:
+
+- `schemas/gnat-dispatch-envelope.schema.json`
+- `src/integrations/cortex/mod.rs`
+- `src/domain/shared/schema.rs`
+- `src/bin/fa_local_run.rs`
+- `tests/gnat_dispatch.rs`
+- GNAT dispatch contract fixtures under `tests/contracts/fixtures`
+
 ## Promotion Gate
 
-Before any GNAT dispatch file is promoted into app support, the promotion slice
-must name:
-
-- exact files to promote
-- source proof command
-- support proof command
-- support service contract or adapter target
-- post-promotion drift report
-- rollback path
-
-Until that gate exists, GNAT dispatch remains `source_local_hold` in the
-promotion ledger.
+The promotion remains valid only while source and support proof commands pass
+and the promotion ledger classifies this drift as intentional app support
+adaptation rather than source-local hold.
