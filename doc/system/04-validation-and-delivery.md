@@ -13,6 +13,7 @@ FA Local currently includes:
 - deny smoke tests in `tests/denial_smoke.rs`
 - deterministic enum serialization tests in `tests/enums_roundtrip.rs`
 - fail-closed guard tests in `tests/guard_helpers.rs`
+- end-to-end admission-facade tests in `tests/admission_facade.rs`
 - repo-local assembly for system documentation through `doc/system/BUILD.sh`
 
 The current machine-checked layer covers:
@@ -84,6 +85,12 @@ It adds:
 - explicit adapter boundary for external route delivery from already selected admitted routes
 - bounded adapter-result mapping back into existing execution-status truth surfaces
 - one concrete capability-scoped local-file-write adapter behind the delivery boundary
+- a bounded end-to-end admission facade (`AdmissionService::admit`) that composes
+  requester-trust, policy, capability admission, and approval-posture resolution
+  into one route decision, and emits a review package for the review-required posture
+- a bounded operator CLI (`fa-local-run`) exposing `validate`, `admit`, and `status`,
+  where `admit` runs the admission facade over a JSON input bundle and emits the
+  schema-valid decision
 - deterministic contract fixtures and deny smoke coverage
 - latest `jsonschema` validator release aligned in the crate dependency set
 
@@ -93,7 +100,7 @@ The following planned surfaces are explicitly not delivered yet:
 
 - any second adapter or multi-adapter runtime surface
 - broad cross-service adapter integrations
-- CLI, daemon, or API surface
+- a daemon or API runtime surface (a bounded operator CLI exists; no long-running service)
 - forensic persistence layer
 - concrete forensic export sink
 - persistence layer
@@ -104,6 +111,7 @@ The repo currently supports:
 
 - `cargo fmt`
 - `cargo test`
+- `cargo run --bin fa-local-run -- admit --inputs examples/admit-inputs-basic.json`
 - `bash doc/system/BUILD.sh`
 
 The current delivered state should be described as:
@@ -124,6 +132,7 @@ The current delivered state should be described as:
 - first bounded review-package emitter workflow present
 - first bounded adapter-backed external route-delivery layer present
 - first concrete capability-scoped adapter present
-- no full external FA Local runtime surface admitted yet
+- first end-to-end admission facade plus bounded operator CLI present
+- no daemon/API/persistence runtime surface admitted yet
 
-That wording matters because the crate now has meaningful contract, deny-path, posture-resolution, bounded plan-validation, truthful status, bounded review-handoff behavior, a bounded review-package emitter workflow for both current review postures, minimal forensic-event truth behavior, a bounded forensic recorder/export workflow, bounded operator-friction behavior, deterministic internal routing behavior, bounded internal coordination behavior, a narrow adapter-backed delivery seam, and one concrete capability-scoped adapter, but it still does not ship persistence, a concrete forensic export sink, a second adapter, generic workflow orchestration, or a CLI/API/daemon runtime surface.
+That wording matters because the crate now has meaningful contract, deny-path, posture-resolution, bounded plan-validation, truthful status, bounded review-handoff behavior, a bounded review-package emitter workflow for both current review postures, minimal forensic-event truth behavior, a bounded forensic recorder/export workflow, bounded operator-friction behavior, deterministic internal routing behavior, bounded internal coordination behavior, a narrow adapter-backed delivery seam, one concrete capability-scoped adapter, and a bounded end-to-end admission facade exposed through an operator CLI, but it still does not ship persistence, a concrete forensic export sink, a second adapter, generic workflow orchestration, or a daemon/API runtime surface.

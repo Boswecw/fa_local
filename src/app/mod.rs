@@ -1,3 +1,4 @@
+pub mod admission_service;
 pub mod decision_service;
 pub mod execution_service;
 pub mod forensic_service;

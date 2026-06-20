@@ -5,6 +5,9 @@ pub mod domain;
 pub mod errors;
 pub mod integrations;
 
+pub use app::admission_service::{
+    AdmissionContext, AdmissionInputs, AdmissionOutcome, AdmissionService,
+};
 pub use config::{CRATE_VERSION, SERVICE_ID};
 pub use domain::guards::{DenialGuard, deny, ensure, fail_closed};
 pub use domain::shared::{
