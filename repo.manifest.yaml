@@ -1,7 +1,7 @@
 schema_version: "RepoManifest.v1"
 
 repo:
-  full_name: "Boswecw/fa_local"
+  full_name: "Boswell-Digital-Solutions/fa_local"
   local_name: "fa-local"
   package_name: "fa-local"
   default_branch: "master"
